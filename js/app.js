@@ -58,7 +58,7 @@ var demo = new Vue({
     searchQuery: '',
     gridColumns: ['date','description','amount'],
     gridData: accountData.transactions.filter(function(el) {
-      return el.finYear >= 2018
+      return el.finYear >= 2010
     })
   }
   // },
