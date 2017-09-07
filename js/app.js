@@ -35,6 +35,10 @@ Vue.component('demo-grid', {
           return (a === b ? 0 : a > b ? 1 : -1) * order
         })
       }
+      
+      this.$parent.transactionTotal = data.reduce(function(preVal,elem){
+        return preVal + elem.amount
+       },0)
       return data
     }
   },
@@ -56,10 +60,13 @@ var demo = new Vue({
   el: '#demo',
   data: {
     searchQuery: '',
-    gridColumns: ['date','description','amount'],
+    gridColumns: ['date','description','term','amount'],
     gridData: accountData.transactions.filter(function(el) {
       return el.finYear >= 2010
-    })
+    }),
+    transactionTotal: accountData.transactions.reduce(function(preVal,elem){
+        return preVal + elem.amount
+    },0)
   }
   // },
   // mounted() {
