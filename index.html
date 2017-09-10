@@ -32,12 +32,29 @@
   </table>
 </script>
 
+
+<div id="demo2">
+  <form id="search">
+    Search <input name="query" v-model="searchQuery">
+  </form>
+<br>
+  <div v-html="transactionTotal"></div>
+  <br>
+  <demo-grid
+  :data="gridData"
+  :columns="gridColumns"
+  :filter-key="searchQuery">
+</demo-grid>
+</div>
+
 <!-- demo root element -->
 <div id="demo">
   <form id="search">
     Search <input name="query" v-model="searchQuery">
   </form>
+<br>
   <div v-html="transactionTotal"></div>
+  <br>
   <demo-grid
   :data="gridData"
   :columns="gridColumns"

@@ -38,7 +38,8 @@ Vue.component('demo-grid', {
       
       this.$parent.transactionTotal = data.reduce(function(preVal,elem){
         return preVal + elem.amount
-       },0)
+      },0)
+      this.$parent.transactionTotal = CurrencyFormatted(this.$parent.transactionTotal)
       return data
     }
   },
@@ -55,6 +56,59 @@ Vue.component('demo-grid', {
   }
 })
 
+function reportingPeriodSummary(transactions) {
+  var summary = []
+  transactions.reduce(function(smry,trn) {
+    if (!smry[trn.reportingPeriod]) {
+        res[trn.reportingPeriod] = {
+            total: 0,
+            prd: trn.reportingPeriod
+        };
+        result.push(res[value.Id])
+    }
+    res[value.Id].qty += value.qty
+    return res;
+  })
+}
+
+function periodSummary(trn) {
+  var result = [];
+  accountData.transactions.reduce(function (res, value) {
+    if (!res[value.reportingPeriod]) {
+        res[value.reportingPeriod] = {
+            reportingPeriod: value.reportingPeriod,
+            amount: 0
+        };
+        result.push(res[value.reportingPeriod])
+    }
+    res[value.reportingPeriod].amount += value.amount;
+    return res;
+  }, {});
+  var formattedResult = result.map(function(val) {
+    return {
+      reportingPeriod: val.reportingPeriod,
+      amount: CurrencyFormatted(val.amount)
+    }
+  });
+  return formattedResult;
+}
+
+var demo2 = new Vue({
+  el: '#demo2',
+  data: {
+    searchQuery: '',
+    gridColumns: ['reportingPeriod','amount'],
+    gridData: periodSummary(),
+    // gridData: accountData.transactions.reduce(function(a,b){
+    //     a[b.reportingPeriod] = (a[b.reportingPeriod]||0) + b.amount;
+    //     return a;
+    // },{}),
+    transactionTotal: accountData.transactions.reduce(function(preVal,elem){
+      return CurrencyFormatted(preVal + elem.amount)
+    },0)
+  }
+}); 
+
 // bootstrap the demo
 var demo = new Vue({
   el: '#demo',
@@ -65,7 +119,7 @@ var demo = new Vue({
       return el.finYear >= 2010
     }),
     transactionTotal: accountData.transactions.reduce(function(preVal,elem){
-        return preVal + elem.amount
+      return CurrencyFormatted(preVal + elem.amount)
     },0)
   }
   // },
@@ -77,3 +131,18 @@ var demo = new Vue({
   //   //.then(response => {console.log(response.data)})
   // }
 }); 
+
+function CurrencyFormatted(amount) {
+  var i = parseFloat(amount);
+  if(isNaN(i)) { i = 0.00; }
+  var minus = '';
+  if(i < 0) { minus = '-'; }
+  i = Math.abs(i);
+  i = parseInt((i + .005) * 100);
+  i = i / 100;
+  s = new String(i);
+  if(s.indexOf('.') < 0) { s += '.00'; }
+  if(s.indexOf('.') == (s.length - 2)) { s += '0'; }
+  s = minus + s;
+  return s;
+}
